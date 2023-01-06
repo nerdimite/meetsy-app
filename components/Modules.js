@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { Button } from "@tremor/react";
+import { Button, Card, Badge } from "@tremor/react";
 import { Title } from "./Utils";
-import { ArrowUpTrayIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowUpTrayIcon,
+  ArrowTrendingUpIcon,
+  ClockIcon,
+} from "@heroicons/react/24/solid";
 
 export const UploadVideoButton = ({ setInput, inputId = "uploadVideo" }) => {
   return (
@@ -31,6 +35,51 @@ export const UploadVideoButton = ({ setInput, inputId = "uploadVideo" }) => {
           }
         }}
       />
+    </div>
+  );
+};
+
+export const TranscriptSegment = ({ timestamp, text, onClick }) => {
+  return (
+    <div
+      className="flex items-start gap-3 text-gray-700 hover:text-blue-500 cursor-pointer"
+      onClick={onClick}
+    >
+      <div className="font-mono font-medium">{timestamp}</div>
+      <div className="text-base">{text}</div>
+    </div>
+  );
+};
+
+export const SearchSegment = ({ timestamp, text, confidence, onClick }) => {
+  return (
+    <div
+      className="space-y-1 text-gray-700 hover:text-blue-500 hover:shadow-lg cursor-pointer"
+      onClick={onClick}
+    >
+      <Card>
+        <div className="flex items-center justify-between mb-2">
+          <Badge
+            text={timestamp}
+            color="blue"
+            size="sm"
+            icon={ClockIcon}
+            tooltip="Timestamp"
+            marginTop="mt-0"
+          />
+          <Badge
+            text={`${confidence.toFixed(2)}`}
+            color="green"
+            size="sm"
+            icon={ArrowTrendingUpIcon}
+            tooltip="Search Similarity"
+            marginTop="mt-0"
+          />
+        </div>
+        <div className="text-sm">
+          {text.length > 250 ? text.substring(0, 250) + "..." : text}
+        </div>
+      </Card>
     </div>
   );
 };
