@@ -7,6 +7,8 @@ import {
   ClockIcon,
 } from "@heroicons/react/24/solid";
 
+const API_KEY = "uH4mo8miig9mueJgbxsRa7pN0nryEXPb6gJTpBuL";
+
 export const UploadVideoButton = ({ setInput, inputId = "uploadVideo" }) => {
   return (
     <div>
@@ -94,16 +96,16 @@ export const InstructionsComponent = () => {
       <div className="text-gray-500 text-sm">
         <ul className="list-decimal list-inside">
           <li>
-            <span className="font-mono font-bold">Upload Video</span> of your
-            meeting
+            <span className="font-mono font-bold">Upload Video</span> of
+            your meeting
           </li>
           <li>
-            Click on the{" "}
-            <span className="font-mono font-bold">Process Video</span> button
+            Click on the <span className="font-mono font-bold">Big Blue Button Below</span>{" "}
+            button
           </li>
           <li>The results will be displayed in the tab group below.</li>
           <li>
-            The <span className="font-mono font-bold">Summary</span> tab will
+            The <span className="font-mono font-bold">Meeting Summary</span> tab will
             show the minutes of the meeting.
           </li>
           <li>
@@ -124,4 +126,90 @@ export const InstructionsComponent = () => {
       </div>
     </div>
   );
+};
+
+// Inference Functions
+export const whisperAPI = async (payload, setLoadingMessage) => {
+  console.log("Payload:", payload);
+
+  // Get S3 Upload URL from API
+  setLoadingMessage("Uploading video...");
+  const raw_upload_resp = await fetch(
+    `https://qiyvjvwm57flqmhhawjq4t4y3u0djofs.lambda-url.us-east-1.on.aws/input`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "x-api-key": API_KEY,
+      },
+      method: "GET",
+    }
+  );
+  const upload_response = await raw_upload_resp.json();
+  console.log("Presigned S3 URL:", upload_response);
+
+  // Upload to S3 (PUT)
+  const raw_upload = await fetch(upload_response.presigned_url, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+  console.log("Video Upload Status:", raw_upload.status);
+
+  // Make Inference Request on Uploaded File (GET)
+  setLoadingMessage("Transcribing video...");
+  const raw_response = await fetch(
+    `https://qiyvjvwm57flqmhhawjq4t4y3u0djofs.lambda-url.us-east-1.on.aws/cellstrat/whisper-gpu/${upload_response.invocation_id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "x-api-key": API_KEY,
+      },
+      method: "GET",
+    }
+  );
+  const response = await raw_response.json();
+
+  return response.output;
+};
+
+export const insightsAPI = async (transcript) => {
+  // Make POST Request to API
+  const raw_response = await fetch(
+    "https://cn7lpguukasl5z6wnvt7m6p2mi0lbmzm.lambda-url.us-east-1.on.aws/",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ transcript: transcript }),
+    }
+  );
+  const response = await raw_response.json();
+
+  return response;
+};
+
+export const searchAPI = async (transcript, query) => {
+  // Make POST Request to API
+  const raw_response = await fetch(
+    "https://qiyvjvwm57flqmhhawjq4t4y3u0djofs.lambda-url.us-east-1.on.aws/gradientfire/transcript-search/",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "x-api-key": API_KEY,
+      },
+      method: "POST",
+      body: JSON.stringify({ transcript: transcript, query: query }),
+    }
+  );
+  const response = await raw_response.json();
+
+  return response;
 };

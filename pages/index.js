@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import {
   Block,
   Card,
@@ -21,6 +20,9 @@ import {
   UploadVideoButton,
   TranscriptSegment,
   SearchSegment,
+  whisperAPI,
+  insightsAPI,
+  searchAPI,
 } from "../components/Modules";
 import { Title, CheckBox } from "../components/Utils";
 
@@ -32,9 +34,43 @@ export default function App() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [output, setOutput] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
-  const [jobId, setJobId] = useState(null);
-  const [query, setQuery] = useState("");
-  const [seek, setSeek] = useState(0);
+  const [loadingMessage, setLoadingMessage] = useState("Uploading video...");
+
+
+
+  const processVideo = async () => {
+    try {
+      // Transcribe the video
+      let whisper_output = await whisperAPI({
+        video: input.split(",")[1]
+      }, setLoadingMessage);
+      console.log(whisper_output);
+      let transcript = whisper_output.transcript;
+      // let transcript = [
+      //   {
+      //     time: 0.0,
+      //     timestamp: "00:00:00.000",
+      //     text: " Hello my name is Bhavish.",
+      //   },
+      // ];
+
+      // Get the summary and action items
+      setLoadingMessage("Generating insights...");
+      let insights_output = await insightsAPI(transcript);
+      console.log(insights_output);
+
+      let _output = {
+        transcript: transcript,
+        minutes: insights_output.minutes,
+        action_items: insights_output.action_items,
+      };
+
+      setOutput(_output);
+    } catch (err) {
+      console.log(err);
+      alert("Something went wrong! Please try again.");
+    }
+  };
 
   const SummaryTab = () => {
     return (
@@ -96,29 +132,35 @@ export default function App() {
               icon={MagnifyingGlassIcon}
               loading={searchLoading}
               disabled={!output}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
                 console.log("Making search query");
                 let video = document.getElementById("video");
                 let query = document.getElementById("search-query").value;
-                console.log(jobId, query);
+                console.log(query);
 
                 setSearchLoading(true);
-                fetch("http://127.0.0.1:8000/search", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    job_id: jobId,
-                    query: query,
-                  }),
-                })
+                fetch(
+                  "https://qiyvjvwm57flqmhhawjq4t4y3u0djofs.lambda-url.us-east-1.on.aws/gradientfire/transcript-search/",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Accept: "application/json",
+                      "x-api-key": "kYkpT5S1o6ajlTsFX6Dl2KElV9zqxJA5jxCNyFZ2",
+                    },
+                    body: JSON.stringify({
+                      transcript: output.transcript,
+                      query: query,
+                    }),
+                  }
+                )
                   .then((response) => response.json())
                   .then((data) => {
-                    console.log("Search:", data);
-                    setSearchResults(data);
-                    video.currentTime = data[0].time;
+                    let _results = data.output;
+                    console.log("Search Results:", _results);
+                    setSearchResults(_results);
+                    video.currentTime = _results[0].time;
                     video.play();
                     setSearchLoading(false);
                   })
@@ -166,7 +208,7 @@ export default function App() {
         <Card>
           <Title decoration="underline decoration-pink-500">Transcript</Title>
           {output &&
-            output.transcription.map((item, index) => {
+            output.transcript.map((item, index) => {
               return (
                 <div key={index} className="flex gap-x-2">
                   <TranscriptSegment
@@ -235,32 +277,16 @@ export default function App() {
             <Button
               importance="primary"
               size="lg"
-              text="Process Video"
+              text="Let AI Do It's Magic!"
               loading={loading}
-              loadingText="Processing..."
+              loadingText={loadingMessage}
               disabled={input === ""}
               icon={BoltIcon}
-              onClick={() => {
+              onClick={async () => {
                 console.log("Processing Video...");
                 setLoading(true);
-                fetch("http://127.0.0.1:8000/predict", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({ video: input }),
-                })
-                  .then((response) => response.json())
-                  .then((data) => {
-                    console.log("Success:", data);
-                    setOutput(data);
-                    setJobId(data.job_id);
-                    setLoading(false);
-                  })
-                  .catch((error) => {
-                    console.error("Error:", error);
-                    setLoading(false);
-                  });
+                await processVideo();
+                setLoading(false);
               }}
             />
           </div>
