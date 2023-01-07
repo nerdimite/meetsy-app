@@ -101,7 +101,25 @@ export const InstructionsComponent = () => {
             Click on the{" "}
             <span className="font-mono font-bold">Process Video</span> button
           </li>
-          <li>Click on the result to jump to the video</li>
+          <li>The results will be displayed in the tab group below.</li>
+          <li>
+            The <span className="font-mono font-bold">Summary</span> tab will
+            show the minutes of the meeting.
+          </li>
+          <li>
+            The <span className="font-mono font-bold">Action Items</span> tab
+            will show the action items of the meeting.
+          </li>
+          <li>
+            The <span className="font-mono font-bold">Search</span> tab can be
+            used to search the video in natural language. The search results are
+            sorted by the similarity of the search query to the transcript.
+          </li>
+          <li>
+            The <span className="font-mono font-bold">Transcript</span> tab will
+            show the transcript of the meeting. Every timestamp can be clicked
+            to jump to that part of the video.
+          </li>
         </ul>
       </div>
     </div>

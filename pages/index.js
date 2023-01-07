@@ -228,49 +228,48 @@ export default function App() {
               <div className="relative h-full space-y-5">
                 <UploadVideoButton setInput={setInput} />
                 <InstructionsComponent />
-
-                <div className="absolute bottom-0 left-0">
-                  <Button
-                    importance="primary"
-                    size="lg"
-                    text="Process Video"
-                    loading={loading}
-                    loadingText="Processing..."
-                    disabled={input === ""}
-                    icon={BoltIcon}
-                    onClick={() => {
-                      console.log("Processing Video...");
-                      setLoading(true);
-                      fetch("http://127.0.0.1:8000/predict", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ video: input }),
-                      })
-                        .then((response) => response.json())
-                        .then((data) => {
-                          console.log("Success:", data);
-                          setOutput(data);
-                          setJobId(data.job_id);
-                          setLoading(false);
-                        })
-                        .catch((error) => {
-                          console.error("Error:", error);
-                          setLoading(false);
-                        });
-                    }}
-                  />
-                </div>
               </div>
             </Col>
           </ColGrid>
+          <div className="flex mt-3 items-center justify-center">
+            <Button
+              importance="primary"
+              size="lg"
+              text="Process Video"
+              loading={loading}
+              loadingText="Processing..."
+              disabled={input === ""}
+              icon={BoltIcon}
+              onClick={() => {
+                console.log("Processing Video...");
+                setLoading(true);
+                fetch("http://127.0.0.1:8000/predict", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ video: input }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    console.log("Success:", data);
+                    setOutput(data);
+                    setJobId(data.job_id);
+                    setLoading(false);
+                  })
+                  .catch((error) => {
+                    console.error("Error:", error);
+                    setLoading(false);
+                  });
+              }}
+            />
+          </div>
         </Block>
 
         <TabList
           defaultValue={1}
           handleSelect={(value) => setSelectedView(value)}
-          marginTop="mt-6"
+          marginTop="mt-3"
         >
           <Tab value={1} text="Meeting Summary" />
           <Tab value={2} text="Action Items" />
