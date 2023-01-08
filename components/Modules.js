@@ -7,7 +7,7 @@ import {
   ClockIcon,
 } from "@heroicons/react/24/solid";
 
-const API_KEY = "uH4mo8miig9mueJgbxsRa7pN0nryEXPb6gJTpBuL";
+const WHISPER_API_KEY = process.env.NEXT_PUBLIC_WHISPER_API_KEY;
 
 export const UploadVideoButton = ({ setInput, inputId = "uploadVideo" }) => {
   return (
@@ -96,17 +96,18 @@ export const InstructionsComponent = () => {
       <div className="text-gray-500 text-sm">
         <ul className="list-decimal list-inside">
           <li>
-            <span className="font-mono font-bold">Upload Video</span> of
-            your meeting
+            <span className="font-mono font-bold">Upload Video</span> of your
+            meeting
           </li>
           <li>
-            Click on the <span className="font-mono font-bold">Big Blue Button Below</span>{" "}
+            Click on the{" "}
+            <span className="font-mono font-bold">Big Blue Button Below</span>{" "}
             button
           </li>
           <li>The results will be displayed in the tab group below.</li>
           <li>
-            The <span className="font-mono font-bold">Meeting Summary</span> tab will
-            show the minutes of the meeting.
+            The <span className="font-mono font-bold">Meeting Summary</span> tab
+            will show the minutes of the meeting.
           </li>
           <li>
             The <span className="font-mono font-bold">Action Items</span> tab
@@ -140,7 +141,7 @@ export const whisperAPI = async (payload, setLoadingMessage) => {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "x-api-key": API_KEY,
+        "x-api-key": WHISPER_API_KEY,
       },
       method: "GET",
     }
@@ -167,7 +168,7 @@ export const whisperAPI = async (payload, setLoadingMessage) => {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "x-api-key": API_KEY,
+        "x-api-key": WHISPER_API_KEY,
       },
       method: "GET",
     }

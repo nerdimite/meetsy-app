@@ -147,7 +147,7 @@ export default function App() {
                     headers: {
                       "Content-Type": "application/json",
                       Accept: "application/json",
-                      "x-api-key": "kYkpT5S1o6ajlTsFX6Dl2KElV9zqxJA5jxCNyFZ2",
+                      "x-api-key": process.env.NEXT_PUBLIC_SEARCH_API_KEY,
                     },
                     body: JSON.stringify({
                       transcript: output.transcript,
