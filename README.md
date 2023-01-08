@@ -13,9 +13,12 @@ This is a [Next.js](https://nextjs.org/) project which uses [Tailwind CSS](https
 3. Create a `.env.local` file and add the following environment variables:
     - `NEXT_PUBLIC_WHISPER_API_KEY`: The API key for the CellStrat Whisper API
     - `NEXT_PUBLIC_SEARCH_API_KEY`: The API key for the Transcript Search API that you deployed on CellStrat Hub
+4. Edit the API endpoint URLs with yours in lines:
+    - 184 in `components/Modules.js` with your Insights API endpoint that you deployed on Lambda
+    - 144 in `pages/index.js` with your Transcript Search API endpoint that you deployed on CellStrat Hub
 4. Run the development server using `yarn next dev`
 5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Deployment
 
-This project is deployed on [Netlify](https://www.netlify.com/). You can deploy it on any other platform of your choice.
+This project is deployed on [Netlify](https://www.netlify.com/). You can deploy it on any other platform of your choice. Remember to add the environment variables in the deployment settings.

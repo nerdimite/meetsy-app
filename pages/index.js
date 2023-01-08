@@ -9,11 +9,7 @@ import {
   Col,
   TextInput,
 } from "@tremor/react";
-import {
-  ArrowUpTrayIcon,
-  BoltIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/solid";
+import { BoltIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import Header from "../components/Header";
 import {
   InstructionsComponent,
@@ -22,28 +18,27 @@ import {
   SearchSegment,
   whisperAPI,
   insightsAPI,
-  searchAPI,
 } from "../components/Modules";
 import { Title, CheckBox } from "../components/Utils";
 
 export default function App() {
   const [selectedView, setSelectedView] = useState(1);
   const [input, setInput] = useState("");
-  const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [output, setOutput] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [loadingMessage, setLoadingMessage] = useState("Uploading video...");
 
-
-
   const processVideo = async () => {
     try {
       // Transcribe the video
-      let whisper_output = await whisperAPI({
-        video: input.split(",")[1]
-      }, setLoadingMessage);
+      let whisper_output = await whisperAPI(
+        {
+          video: input.split(",")[1],
+        },
+        setLoadingMessage
+      );
       console.log(whisper_output);
       let transcript = whisper_output.transcript;
       // let transcript = [

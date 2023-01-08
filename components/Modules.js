@@ -195,22 +195,3 @@ export const insightsAPI = async (transcript) => {
 
   return response;
 };
-
-export const searchAPI = async (transcript, query) => {
-  // Make POST Request to API
-  const raw_response = await fetch(
-    "https://qiyvjvwm57flqmhhawjq4t4y3u0djofs.lambda-url.us-east-1.on.aws/gradientfire/transcript-search/",
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "x-api-key": API_KEY,
-      },
-      method: "POST",
-      body: JSON.stringify({ transcript: transcript, query: query }),
-    }
-  );
-  const response = await raw_response.json();
-
-  return response;
-};
